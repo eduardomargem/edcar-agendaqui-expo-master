@@ -1,15 +1,17 @@
 import { useRouter } from 'expo-router';
 import React, { useState, useEffect } from 'react';
-import { 
-  Button, 
-  FlatList, 
-  Modal, 
-  StyleSheet, 
-  Text, 
-  TouchableOpacity, 
+import { Ionicons } from '@expo/vector-icons';
+
+import {
+  Button,
+  FlatList,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
   View,
   ActivityIndicator,
-  RefreshControl 
+  RefreshControl
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -34,9 +36,52 @@ export default function Servicos() {
     setCarregando(true);
     setTimeout(() => {
       setServicos([
-        { id: 1, nome: 'Ducha Standard', preco: 34.99, duracao_min: 30, descricao: 'Básica', ativo: true, itensInclusos: ['Aspiração', 'Lavagem', 'Secagem', 'Pretinho'] },
-        { id: 2, nome: 'Economy', preco: 39.99, duracao_min: 60, descricao: 'Completa', ativo: true, itensInclusos: ['Aspiração', 'Lavagem', 'Secagem', 'Pretinho', 'Painel', 'Vidros'] },
-        { id: 3, nome: 'ADVANCED', preco: 39.99, duracao_min: 60, descricao: 'Cera de cerâmica', ativo: true, itensInclusos: ['LAVAGEM COMPLETA','CERA DE CERAMIC', 'PAINEL', 'VIDROS', 'CAIXA DE RODA', 'PRETINHO'] },
+        { id: 1, nome: 'DUCHA STANDARD', 
+          preco: 34.99, 
+          duracao_min: 30, 
+          descricao: 'Básica', 
+          ativo: true, 
+          itensInclusos: ['ASPIRAÇÃO', 'LAVAGEM', 'SECAGEM', 'PRETINHO'] 
+        },
+        { id: 2, nome: 'ECONOMY', 
+          preco: 39.99, 
+          duracao_min: 60, 
+          descricao: 'Completa', 
+          ativo: true, 
+          itensInclusos: ['ASPIRAÇÃO', 'LAVAGEM', 'SECAGEM', 'PRETINHO', 'PAINEL', 'VIDROS'] 
+        },
+        { id: 3, 
+          nome: 'ADVANCED', 
+          preco: 49.99, 
+          duracao_min: 60, 
+          descricao: 'Cera de cerâmica', 
+          ativo: true, 
+          itensInclusos: ['LAVAGEM COMPLETA', 'CERA DE CERAMIC', 'PAINEL', 'VIDROS', 'CAIXA DE RODA', 'PRETINHO'] 
+        },
+        { id: 4, 
+          nome: 'DELUXE', 
+          preco: 69.99, 
+          duracao_min: 60, 
+          descricao: 'Revitalização', 
+          ativo: true, 
+          itensInclusos: ['LAVAGEM COMPLETA', 'REVITALIZAÇÃO DE PLÁSTICOS EXTERNOS'] 
+        },
+        { id: 5, 
+          nome: 'STAR', 
+          preco: 99.99, 
+          duracao_min: 60, 
+          descricao: 'Brilho intenso', 
+          ativo: true, 
+          itensInclusos: ['LAVAGEM COMPLETA', 'AUTO BRILHO', 'PROTEÇÃO', 'REVITALIZAÇÃO DE PINTURA'] 
+        },
+        { id: 6, 
+          nome: 'PREMIUM', 
+          preco: 190.00, 
+          duracao_min: 60, 
+          descricao: 'TOP Premium', 
+          ativo: true, 
+          itensInclusos: ['LAVAGEM COMPLETA', 'REVITALIZAÇÃO DOS PLÁSTICOS INTERNO/ EXTERNO', 'DESCONTAMINAÇÃO E CRISTALIZAÇÃO DOS VIDROS', 'REVITALIZAÇÃO DE PINTURA'] 
+        },
       ]);
       setCarregando(false);
     }, 1000);
@@ -44,14 +89,14 @@ export default function Servicos() {
 
   useEffect(() => { recarregar(); }, []);
 
-  const abrirModal = (servico: Servico) => { 
-    setServicoSelecionado(servico); 
-    setModalVisivel(true); 
+  const abrirModal = (servico: Servico) => {
+    setServicoSelecionado(servico);
+    setModalVisivel(true);
   };
 
-  const fecharModal = () => { 
-    setModalVisivel(false); 
-    setServicoSelecionado(null); 
+  const fecharModal = () => {
+    setModalVisivel(false);
+    setServicoSelecionado(null);
   };
 
   if (carregando && servicos.length === 0) {
@@ -65,12 +110,10 @@ export default function Servicos() {
 
   return (
     <View style={estilos.container}>
-      {/* Botão de voltar sofisticado */}
       <TouchableOpacity style={estilos.botaoVoltar} onPress={() => router.replace('/menu')}>
-        <LinearGradient colors={['#555', '#0B1F44']} style={estilos.botaoVoltarGradiente}>
-          <Text style={estilos.textoBotaoVoltar}>← Voltar</Text>
-        </LinearGradient>
+            <Ionicons name="arrow-back" size={30} color="#0B1F44" />
       </TouchableOpacity>
+
 
       <Text style={estilos.titulo}>Escolha um serviço</Text>
 
@@ -131,10 +174,7 @@ const estilos = StyleSheet.create({
   container: { flex: 1, padding: 20, backgroundColor: '#fff', paddingTop: 60 },
   centralizado: { justifyContent: 'center', alignItems: 'center' },
   botaoVoltar: { position: 'absolute', top: 40, left: 20, zIndex: 10 },
-  botaoVoltarGradiente: { paddingHorizontal: 15, paddingVertical: 8, borderRadius: 20 },
-  textoBotaoVoltar: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
-
-  titulo: { fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginBottom: 20 },
+  titulo: { fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginBottom: 20, marginTop: 10 },
   botao: { padding: 15, backgroundColor: '#0B1F44', marginBottom: 10, borderRadius: 5 },
   textoBotao: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
   preco: { color: '#fff', fontSize: 14, marginTop: 4 },
