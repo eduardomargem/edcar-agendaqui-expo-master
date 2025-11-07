@@ -35,7 +35,7 @@ export default function Menu() {
 
   return (
     <View style={estilos.fundo}>
-      <Text style={estilos.titulo}>Menu</Text>
+      <Text style={estilos.titulo}>Meu Perfil</Text>
 
       <TouchableOpacity
         style={[estilos.botao, { backgroundColor: '#007AFF', alignItems: 'center', paddingVertical: 15 }]}

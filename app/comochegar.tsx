@@ -7,7 +7,7 @@ export default function ComoChegar() {
   const router = useRouter();
 
   const abrirMapa = () => {
-    const endereco = encodeURIComponent('Rua das Palmeiras, 123 - Centro, São Paulo - SP');
+    const endereco = encodeURIComponent('R. Inácio Ferreira Pinto, 81 - Jardim Itatiaia, São Paulo - SP, 04843-310');
     Linking.openURL(`https://www.google.com/maps/search/?api=1&query=${endereco}`);
   };
 
@@ -18,21 +18,21 @@ export default function ComoChegar() {
       <View style={estilos.card}>
         <MapPin color="#0B1F44" size={24} />
         <Text style={estilos.texto}>
-          Rua das Palmeiras, 123 - Centro, São Paulo - SP
+          R. Inácio Ferreira Pinto, 81 - Jardim Itatiaia, São Paulo - SP, 04843-310
         </Text>
       </View>
 
       <View style={estilos.card}>
         <Phone color="#0B1F44" size={24} />
         <Text style={estilos.texto}>
-          Telefone: (11) 99999-9999
+          Telefone: (11) 95064-9969
         </Text>
       </View>
 
       <View style={estilos.card}>
         <Clock color="#0B1F44" size={24} />
         <Text style={estilos.texto}>
-          Horário de funcionamento: Segunda a Sábado, 8h às 18h
+          Horário de funcionamento: Segunda a {"\n"}Sábado, 8h às 18h
         </Text>
       </View>
 
@@ -45,13 +45,13 @@ export default function ComoChegar() {
         <Text style={[estilos.texto, { fontWeight: '600' }]}>Formas de Pagamento</Text>
       </View>
       <Text style={estilos.pagamento}>
-        O pagamento é realizado **no local, após a conclusão do serviço**.  
-        Aceitamos dinheiro, Pix e cartões de débito e crédito.  
-        (Por enquanto, não oferecemos pagamento online.)
+        O pagamento é realizado{' '}
+        <Text style={{ fontWeight: 'bold' }}>no local, após a conclusão do serviço</Text>.
+        {'\n'}Aceitamos dinheiro, Pix e cartões de débito e crédito.
       </Text>
 
       <TouchableOpacity style={estilos.botaoVoltar} onPress={() => router.push('/menu')}>
-        <Text style={estilos.textoBotao}>← Voltar ao Menu</Text>
+        <Text style={estilos.textoBotao}>Voltar ao Menu</Text>
       </TouchableOpacity>
     </ScrollView>
   );
