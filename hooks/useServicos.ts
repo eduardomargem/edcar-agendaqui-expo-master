@@ -14,7 +14,7 @@ export function useServicos() {
       setServicos(dados);
     } catch (error) {
       setErro('Erro ao carregar serviços');
-      console.error(error);
+      console.error('Erro detalhado:', error);
     } finally {
       setCarregando(false);
     }

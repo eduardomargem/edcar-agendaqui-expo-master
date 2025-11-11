@@ -1,7 +1,6 @@
 import { useRouter } from 'expo-router';
 import React, { useState, useEffect } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-
 import {
   Button,
   FlatList,
@@ -11,15 +10,17 @@ import {
   TouchableOpacity,
   View,
   ActivityIndicator,
-  RefreshControl
+  RefreshControl,
+  Alert
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useServicos } from '../hooks/useServicos'; // Ajuste o caminho conforme sua estrutura
 
 interface Servico {
   id: number;
   nome: string;
   preco: number;
-  duracao_min: number;
+  duracaoMin: number; // Mudou de duracao_min para duracaoMin
   descricao?: string;
   ativo: boolean;
   itensInclusos?: string[];
@@ -27,67 +28,19 @@ interface Servico {
 
 export default function Servicos() {
   const router = useRouter();
-  const [servicos, setServicos] = useState<Servico[]>([]);
-  const [carregando, setCarregando] = useState(true);
+  const { servicos, carregando, erro, recarregar } = useServicos();
   const [modalVisivel, setModalVisivel] = useState(false);
   const [servicoSelecionado, setServicoSelecionado] = useState<Servico | null>(null);
 
-  const recarregar = () => {
-    setCarregando(true);
-    setTimeout(() => {
-      setServicos([
-        { id: 1, nome: 'DUCHA STANDARD', 
-          preco: 34.99, 
-          duracao_min: 30, 
-          descricao: 'Básica', 
-          ativo: true, 
-          itensInclusos: ['ASPIRAÇÃO', 'LAVAGEM', 'SECAGEM', 'PRETINHO'] 
-        },
-        { id: 2, nome: 'ECONOMY', 
-          preco: 39.99, 
-          duracao_min: 60, 
-          descricao: 'Completa', 
-          ativo: true, 
-          itensInclusos: ['ASPIRAÇÃO', 'LAVAGEM', 'SECAGEM', 'PRETINHO', 'PAINEL', 'VIDROS'] 
-        },
-        { id: 3, 
-          nome: 'ADVANCED', 
-          preco: 49.99, 
-          duracao_min: 60, 
-          descricao: 'Cera de cerâmica', 
-          ativo: true, 
-          itensInclusos: ['LAVAGEM COMPLETA', 'CERA DE CERAMIC', 'PAINEL', 'VIDROS', 'CAIXA DE RODA', 'PRETINHO'] 
-        },
-        { id: 4, 
-          nome: 'DELUXE', 
-          preco: 69.99, 
-          duracao_min: 60, 
-          descricao: 'Revitalização', 
-          ativo: true, 
-          itensInclusos: ['LAVAGEM COMPLETA', 'REVITALIZAÇÃO DE PLÁSTICOS EXTERNOS'] 
-        },
-        { id: 5, 
-          nome: 'STAR', 
-          preco: 99.99, 
-          duracao_min: 60, 
-          descricao: 'Brilho intenso', 
-          ativo: true, 
-          itensInclusos: ['LAVAGEM COMPLETA', 'AUTO BRILHO', 'PROTEÇÃO', 'REVITALIZAÇÃO DE PINTURA'] 
-        },
-        { id: 6, 
-          nome: 'PREMIUM', 
-          preco: 190.00, 
-          duracao_min: 60, 
-          descricao: 'TOP Premium', 
-          ativo: true, 
-          itensInclusos: ['LAVAGEM COMPLETA', 'REVITALIZAÇÃO DOS PLÁSTICOS INTERNO/ EXTERNO', 'DESCONTAMINAÇÃO E CRISTALIZAÇÃO DOS VIDROS', 'REVITALIZAÇÃO DE PINTURA'] 
-        },
+  // Mostrar erro se houver
+  useEffect(() => {
+    if (erro) {
+      Alert.alert('Erro', erro, [
+        { text: 'OK', onPress: () => {} },
+        { text: 'Tentar Novamente', onPress: recarregar }
       ]);
-      setCarregando(false);
-    }, 1000);
-  };
-
-  useEffect(() => { recarregar(); }, []);
+    }
+  }, [erro]);
 
   const abrirModal = (servico: Servico) => {
     setServicoSelecionado(servico);
@@ -111,24 +64,32 @@ export default function Servicos() {
   return (
     <View style={estilos.container}>
       <TouchableOpacity style={estilos.botaoVoltar} onPress={() => router.replace('/menu')}>
-            <Ionicons name="arrow-back" size={30} color="#0B1F44" />
+        <Ionicons name="arrow-back" size={30} color="#0B1F44" />
       </TouchableOpacity>
-
 
       <Text style={estilos.titulo}>Escolha um serviço</Text>
 
       <FlatList
         data={servicos.filter(s => s.ativo)}
         keyExtractor={(item) => item.id.toString()}
-        refreshControl={<RefreshControl refreshing={carregando} onRefresh={recarregar} />}
+        refreshControl={
+          <RefreshControl 
+            refreshing={carregando} 
+            onRefresh={recarregar} 
+          />
+        }
         renderItem={({ item }) => (
           <TouchableOpacity style={estilos.botao} onPress={() => abrirModal(item)}>
             <Text style={estilos.textoBotao}>{item.nome}</Text>
             <Text style={estilos.preco}>R$ {item.preco.toFixed(2)}</Text>
-            <Text style={estilos.duracao}>{item.duracao_min} min</Text>
+            <Text style={estilos.duracao}>{item.duracaoMin} min</Text>
           </TouchableOpacity>
         )}
-        ListEmptyComponent={<Text style={estilos.vazio}>Nenhum serviço disponível</Text>}
+        ListEmptyComponent={
+          <Text style={estilos.vazio}>
+            {carregando ? 'Carregando...' : 'Nenhum serviço disponível'}
+          </Text>
+        }
       />
 
       <Modal visible={modalVisivel} transparent animationType="slide" onRequestClose={fecharModal}>
@@ -147,14 +108,23 @@ export default function Servicos() {
                 </>
               )}
 
-              <Text style={estilos.infoModal}>Duração: {servicoSelecionado.duracao_min} minutos</Text>
+              <Text style={estilos.infoModal}>Duração: {servicoSelecionado.duracaoMin} minutos</Text>
               <Text style={estilos.infoModal}>Preço: R$ {servicoSelecionado.preco.toFixed(2)}</Text>
 
               <View style={estilos.botoesModal}>
-                <TouchableOpacity style={[estilos.botaoConfirmarModal]} onPress={() => {
-                  router.push({ pathname: '/agendamento', params: { servico: servicoSelecionado.nome } });
-                  fecharModal();
-                }}>
+                <TouchableOpacity 
+                  style={[estilos.botaoConfirmarModal]} 
+                  onPress={() => {
+                    router.push({ 
+                      pathname: '/agendamento', 
+                      params: { 
+                        servico: servicoSelecionado.nome,
+                        servicoId: servicoSelecionado.id.toString()
+                      } 
+                    });
+                    fecharModal();
+                  }}
+                >
                   <Text style={estilos.textoBotaoConfirmarModal}>Agendar</Text>
                 </TouchableOpacity>
                 <View style={{ height: 10 }} />
@@ -170,6 +140,7 @@ export default function Servicos() {
   );
 }
 
+// Os estilos permanecem os mesmos...
 const estilos = StyleSheet.create({
   container: { flex: 1, padding: 20, backgroundColor: '#fff', paddingTop: 60 },
   centralizado: { justifyContent: 'center', alignItems: 'center' },

@@ -1,3 +1,103 @@
 2025-10-31 19:19:09.182218-03:00 jdbc[13]: exception
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "select * from servicos[*]:"; SQL statement:
 select * from servicos: [42000-232]
+2025-11-10 20:19:11.543355-03:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "UPDATE [*]FROM SERVICOS\000d\000aSET NOME = 'AVANÇADO'\000d\000aWHERE ID = 1"; expected "identifier"; SQL statement:
+UPDATE FROM SERVICOS
+SET NOME = 'AVANÇADO'
+WHERE ID = 1 [42001-232]
+2025-11-10 20:19:21.601051-03:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "UPDATE [*]FROM SERVICOS\000d\000aSET NOME = 'AVANÇADO'\000d\000aWHERE ID = 1"; expected "identifier"; SQL statement:
+UPDATE FROM SERVICOS
+SET NOME = 'AVANÇADO'
+WHERE ID = 1 [42001-232]
+2025-11-10 20:28:33.226314-03:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "begin [*]tran\000d\000aCREATE TABLE clientes (\000d\000a    id INT AUTO_INCREMENT PRIMARY KEY,\000d\000a    nome VARCHAR(100) NOT NULL,\000d\000a    telefone VARCHAR(20),\000d\000a    email VARCHAR(100),\000d\000a    data_cadastro DATETIME DEFAULT CURRENT_TIMESTAMP\000d\000a)"; SQL statement:
+begin tran
+CREATE TABLE clientes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    telefone VARCHAR(20),
+    email VARCHAR(100),
+    data_cadastro DATETIME DEFAULT CURRENT_TIMESTAMP
+) [42000-232]
+2025-11-10 20:31:12.187654-03:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Function "GETDATE" not found; SQL statement:
+INSERT INTO clientes (nome, telefone, email, data_cadastro) VALUES
+('Daniel Pereira', '(11) 91234-5678', 'daniel123@email.com', getdate()),
+('Eduardo Margem', '(11) 92345-6789', 'eduardo123@email.com', getdate()) [90022-232]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:644)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
+	at org.h2.message.DbException.get(DbException.java:223)
+	at org.h2.message.DbException.get(DbException.java:199)
+	at org.h2.command.Parser.readFunction(Parser.java:3772)
+	at org.h2.command.Parser.readTermWithIdentifier(Parser.java:5142)
+	at org.h2.command.Parser.readTerm(Parser.java:4828)
+	at org.h2.command.Parser.readFactor(Parser.java:3323)
+	at org.h2.command.Parser.readSum(Parser.java:3310)
+	at org.h2.command.Parser.readConcat(Parser.java:3275)
+	at org.h2.command.Parser.readCondition(Parser.java:3065)
+	at org.h2.command.Parser.readExpression(Parser.java:2985)
+	at org.h2.command.Parser.readExpressionOrDefault(Parser.java:2971)
+	at org.h2.command.Parser.parseValuesForCommand(Parser.java:1685)
+	at org.h2.command.Parser.parseInsert(Parser.java:1550)
+	at org.h2.command.Parser.parsePrepared(Parser.java:698)
+	at org.h2.command.Parser.parse(Parser.java:581)
+	at org.h2.command.Parser.parse(Parser.java:556)
+	at org.h2.command.Parser.prepareCommand(Parser.java:484)
+	at org.h2.engine.SessionLocal.prepareLocal(SessionLocal.java:645)
+	at org.h2.engine.SessionLocal.prepareCommand(SessionLocal.java:561)
+	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1164)
+	at org.h2.jdbc.JdbcStatement.executeInternal(JdbcStatement.java:245)
+	at org.h2.jdbc.JdbcStatement.execute(JdbcStatement.java:231)
+	at org.h2.server.web.WebApp.getResult(WebApp.java:1344)
+	at org.h2.server.web.WebApp.query(WebApp.java:1142)
+	at org.h2.server.web.WebApp.query(WebApp.java:1118)
+	at org.h2.server.web.WebApp.process(WebApp.java:244)
+	at org.h2.server.web.WebApp.processRequest(WebApp.java:176)
+	at org.h2.server.web.JakartaWebServlet.doGet(JakartaWebServlet.java:129)
+	at org.h2.server.web.JakartaWebServlet.doPost(JakartaWebServlet.java:166)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:590)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:162)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:138)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:165)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:88)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:482)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:113)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:83)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:72)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:342)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:399)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:903)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1774)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:973)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:491)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+	at java.base/java.lang.Thread.run(Unknown Source)
+2025-11-10 20:37:05.378781-03:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "update clientes\000d\000aset cpf = '73898995062'\000d\000awhere id = 1\000d\000a\000d\000a[*]update clientes\000d\000aset cpf = '21926581091'\000d\000awhere id = 2"; SQL statement:
+update clientes
+set cpf = '73898995062'
+where id = 1
+
+update clientes
+set cpf = '21926581091'
+where id = 2 [42000-232]
