@@ -1,14 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator, RefreshControl } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator, RefreshControl, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface Agendamento {
-  id: number;
-  cliente: string;
   servico: string;
+  data: string;
   horario: string;
-  status: 'PENDENTE' | 'APROVADO' | 'CONCLUIDO' | 'REJEITADO';
+  observacao?: string;
+  nomeCliente?: string;
+  status?: 'PENDENTE' | 'CONFIRMADO' | 'CONCLUIDO' | 'CANCELADO';
 }
 
 export default function AgendaDiaria() {
@@ -16,26 +18,30 @@ export default function AgendaDiaria() {
   const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
   const [carregando, setCarregando] = useState(true);
 
-  const carregarAgendamentos = () => {
-    setCarregando(true);
-    setTimeout(() => {
-      setAgendamentos([
-        { id: 1, cliente: 'João', servico: 'DUCHA STANDARD', horario: '09:00', status: 'PENDENTE' },
-        { id: 2, cliente: 'Maria', servico: 'DELUXE', horario: '10:00', status: 'APROVADO' },
-        { id: 3, cliente: 'Carlos', servico: 'ECONOMY', horario: '13:00', status: 'CONCLUIDO' },
-      ]);
+  const carregarAgendamentos = useCallback(async () => {
+    try {
+      setCarregando(true);
+      const json = await AsyncStorage.getItem('agendamentos');
+      const dados: Agendamento[] = json ? JSON.parse(json) : [];
+      setAgendamentos(dados);
+    } catch (error) {
+      Alert.alert('Erro', 'Não foi possível carregar os agendamentos');
+    } finally {
       setCarregando(false);
-    }, 1000);
-  };
+    }
+  }, []);
 
-  useEffect(() => { carregarAgendamentos(); }, []);
+  useEffect(() => {
+    carregarAgendamentos();
+  }, [carregarAgendamentos]);
 
   const statusCor = (status: Agendamento['status']) => {
     switch (status) {
       case 'PENDENTE': return '#FFA500';
-      case 'APROVADO': return '#0B1F44';
+      case 'CONFIRMADO': return '#0B1F44';
       case 'CONCLUIDO': return '#28A745';
-      case 'REJEITADO': return '#DC3545';
+      case 'CANCELADO': return '#DC3545';
+      default: return '#555';
     }
   };
 
@@ -49,20 +55,25 @@ export default function AgendaDiaria() {
 
       {carregando ? (
         <ActivityIndicator size="large" color="#0B1F44" />
+      ) : agendamentos.length === 0 ? (
+        <Text style={{ textAlign: 'center', color: '#777', marginTop: 20 }}>Nenhum agendamento encontrado</Text>
       ) : (
         <FlatList
           data={agendamentos}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(_, i) => i.toString()}
           refreshControl={<RefreshControl refreshing={carregando} onRefresh={carregarAgendamentos} />}
           renderItem={({ item }) => (
             <TouchableOpacity
               style={[estilos.card, { borderLeftColor: statusCor(item.status) }]}
-              onPress={() => router.push({ pathname: '/admin/GestaoAgendamentos', params: { id: item.id.toString() } })}
+              onPress={() => router.push({ pathname: '/admin/GestaoAgendamentos', params: { servico: item.servico, data: item.data, horario: item.horario } })}
             >
               <Text style={estilos.textoPrincipal}>{item.servico}</Text>
-              <Text style={estilos.textoSecundario}>Cliente: {item.cliente}</Text>
+              <Text style={estilos.textoSecundario}>Data: {item.data}</Text>
               <Text style={estilos.textoSecundario}>Horário: {item.horario}</Text>
-              <Text style={[estilos.status, { color: statusCor(item.status) }]}>{item.status}</Text>
+              <Text style={estilos.textoSecundario}>Modelo: {item.observacao || 'Não informado'}</Text>
+              <Text style={[estilos.status, { color: statusCor(item.status) }]}>
+                {item.status || 'PENDENTE'}
+              </Text>
             </TouchableOpacity>
           )}
         />
