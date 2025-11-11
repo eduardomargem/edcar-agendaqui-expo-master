@@ -57,16 +57,18 @@ export default function Login() {
         router.replace('/admin/MenuAdmin');
         return;
       }
+
       if (email === 'funcionario@teste.com' && senha === '1234') {
-        router.replace('/admin/AgendaDiaria');
+        router.replace('/admin/MenuFuncionario');
         return;
       }
+
       if (email === 'cliente@teste.com' && senha === '1234') {
         router.replace('/menu');
         return;
       }
 
-      // Verifica cliente salvo no AsyncStorage
+      // Verifica cliente salvo localmente
       const usuarioData = await AsyncStorage.getItem('usuario');
       if (!usuarioData) {
         Alert.alert('Erro', 'Nenhum cliente cadastrado.');
@@ -84,7 +86,6 @@ export default function Login() {
     }
   };
 
-  // ======== Interface ========
   return (
     <LinearGradient
       colors={['#0B1F44', '#000000']}
@@ -135,13 +136,8 @@ export default function Login() {
   );
 }
 
-// ======== Estilos ========
 const estilos = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+  container: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   card: {
     backgroundColor: '#FFFFFF',
     borderRadius: 20,
@@ -153,14 +149,8 @@ const estilos = StyleSheet.create({
     shadowRadius: 10,
     elevation: 6,
   },
-  logoContainer: {
-    alignItems: 'center',
-    marginBottom: 30,
-  },
-  logo: {
-    width: 110,
-    height: 110,
-  },
+  logoContainer: { alignItems: 'center', marginBottom: 30 },
+  logo: { width: 110, height: 110 },
   nomeApp: {
     fontSize: 32,
     fontFamily: 'Poppins_700Bold',
@@ -185,10 +175,6 @@ const estilos = StyleSheet.create({
     borderRadius: 8,
     fontFamily: 'Poppins_400Regular',
     fontSize: 15,
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 3,
   },
   botao: {
     width: '100%',
@@ -198,9 +184,7 @@ const estilos = StyleSheet.create({
     alignItems: 'center',
     marginTop: 10,
   },
-  botaoSecundario: {
-    backgroundColor: '#888888',
-  },
+  botaoSecundario: { backgroundColor: '#888888' },
   textoBotao: {
     color: '#FFFFFF',
     fontSize: 16,
