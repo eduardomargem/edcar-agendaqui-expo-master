@@ -1,0 +1,19 @@
+2025-11-12 19:40:34.205399-03:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "select * from servicos\000d\000a\000d\000a[*]select * from clientes\000d\000a\000d\000aselect * from funcionarios"; SQL statement:
+select * from servicos
+
+select * from clientes
+
+select * from funcionarios [42000-232]
+2025-11-12 19:40:35.978969-03:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "select * from servicos\000d\000a\000d\000a[*]select * from clientes\000d\000a\000d\000aselect * from funcionarios"; SQL statement:
+select * from servicos
+
+select * from clientes
+
+select * from funcionarios [42000-232]
+2025-11-12 19:40:44.319814-03:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "select * from servicos\000d\000a\000d\000a[*]select * from clientes"; SQL statement:
+select * from servicos
+
+select * from clientes [42000-232]

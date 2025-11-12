@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://10.135.110.39:8080/api';
+const API_BASE_URL = 'http://10.135.145.26:8080/api';
 
 export interface Cliente {
   id: number;
