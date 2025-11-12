@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://10.135.110.55:8080/api'; // Altere para sua URL
+const API_BASE_URL = 'http://10.135.110.39:8080/api';
 
 export interface Cliente {
   id: number;
@@ -31,6 +31,17 @@ export interface Servico {
   preco: number;
   ativo: boolean;
   itensInclusos?: string[];
+}
+
+export interface Funcionario {
+  id: number;
+  cpf: string;
+  dataCadastro: string;
+  email: string;
+  nome: string;
+  senha: string;
+  telefone: string;
+  ativo: boolean;
 }
 
 export const api = {
