@@ -10,6 +10,28 @@ export interface Cliente {
   senha: string;
 }
 
+export interface Administrador {
+  id: number;
+  cpf: string;
+  dataCadastro: string;
+  email: string;
+  nome: string;
+  senha: string;
+  telefone: string;
+  ativo: boolean;
+}
+
+export interface Funcionario {
+  id: number;
+  cpf: string;
+  dataCadastro: string;
+  email: string;
+  nome: string;
+  senha: string;
+  telefone: string;
+  ativo: boolean;
+}
+
 export interface LoginRequest {
   email: string;
   senha: string;
@@ -33,29 +55,19 @@ export interface Servico {
   itensInclusos?: string[];
 }
 
-export interface Funcionario {
-  id: number;
-  cpf: string;
-  dataCadastro: string;
-  email: string;
-  nome: string;
-  senha: string;
-  telefone: string;
-  ativo: boolean;
-}
+// Tipos para identificar o tipo de usuário
+export type TipoUsuario = 'cliente' | 'funcionario' | 'administrador';
 
-export interface Administrador {
+export interface UsuarioLogado {
   id: number;
-  cpf: string;
-  dataCadastro: string;
-  email: string;
   nome: string;
-  senha: string;
-  telefone: string;
-  ativo: boolean;
+  email: string;
+  tipo: TipoUsuario;
+  telefone?: string;
 }
 
 export const api = {
+  // ======== LOGIN POR TIPO DE USUÁRIO ========
   async loginCliente(loginRequest: LoginRequest): Promise<Cliente> {
     try {
       const response = await fetch(`${API_BASE_URL}/clientes/login`, {
@@ -81,8 +93,58 @@ export const api = {
     }
   },
 
-  // Verificar se email existe
-  async verificarEmail(email: string): Promise<boolean> {
+  async loginAdministrador(loginRequest: LoginRequest): Promise<Administrador> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/administradores/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(loginRequest),
+      });
+      
+      if (response.status === 401) {
+        throw new Error('Email ou senha inválidos');
+      }
+      
+      if (!response.ok) {
+        throw new Error('Erro ao fazer login como administrador');
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('Erro na API:', error);
+      throw error;
+    }
+  },
+
+  async loginFuncionario(loginRequest: LoginRequest): Promise<Funcionario> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/funcionarios/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(loginRequest),
+      });
+      
+      if (response.status === 401) {
+        throw new Error('Email ou senha inválidos');
+      }
+      
+      if (!response.ok) {
+        throw new Error('Erro ao fazer login como funcionário');
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('Erro na API:', error);
+      throw error;
+    }
+  },
+
+  // ======== VERIFICAÇÕES ========
+  async verificarEmailCliente(email: string): Promise<boolean> {
     try {
       const response = await fetch(`${API_BASE_URL}/clientes/verificar-email`, {
         method: 'POST',
@@ -101,6 +163,7 @@ export const api = {
     }
   },
 
+  // ======== SERVIÇOS ========
   async getServicos(): Promise<Servico[]> {
     try {
       const response = await fetch(`${API_BASE_URL}/servicos`);
@@ -109,7 +172,6 @@ export const api = {
       }
       const data = await response.json();
       
-      // Mapeie os dados para corresponder à interface
       return data.map((servico: any) => ({
         id: servico.id,
         nome: servico.nome,

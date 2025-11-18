@@ -7,6 +7,7 @@ import {
   Image,
   StyleSheet,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as SplashScreen from 'expo-splash-screen';
@@ -17,12 +18,13 @@ import {
   Poppins_700Bold,
 } from '@expo-google-fonts/poppins';
 import { useRouter } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAuth } from '../hooks/useAuth';
 
 SplashScreen.preventAutoHideAsync();
 
 export default function Login() {
   const router = useRouter();
+  const { login, carregando } = useAuth();
 
   const [emailInput, setEmailInput] = useState('');
   const [senhaInput, setSenhaInput] = useState('');
@@ -41,7 +43,7 @@ export default function Login() {
 
   if (!fontsLoaded) return null;
 
-  // ======== Lógica de Login ========
+  // ======== Lógica de Login Atualizada ========
   const handleLogin = async () => {
     try {
       const email = emailInput.trim().toLowerCase();
@@ -52,37 +54,25 @@ export default function Login() {
         return;
       }
 
-      // Logins fixos de teste
-      if (email === 'admin@teste.com' && senha === '1234') {
-        router.replace('/admin/MenuAdmin');
-        return;
-      }
+      // Fazer login usando o hook useAuth
+      const usuario = await login(email, senha);
 
-      if (email === 'funcionario@teste.com' && senha === '1234') {
-        router.replace('/admin/MenuFuncionario');
-        return;
+      // Redirecionar baseado no tipo de usuário
+      switch (usuario.tipo) {
+        case 'administrador':
+          router.replace('/admin/MenuAdmin');
+          break;
+        case 'funcionario':
+          router.replace('/admin/MenuFuncionario');
+          break;
+        case 'cliente':
+          router.replace('/menu');
+          break;
+        default:
+          Alert.alert('Erro', 'Tipo de usuário não reconhecido.');
       }
-
-      if (email === 'cliente@teste.com' && senha === '1234') {
-        router.replace('/menu');
-        return;
-      }
-
-      // Verifica cliente salvo localmente
-      const usuarioData = await AsyncStorage.getItem('usuario');
-      if (!usuarioData) {
-        Alert.alert('Erro', 'Nenhum cliente cadastrado.');
-        return;
-      }
-
-      const usuario = JSON.parse(usuarioData);
-      if (usuario.email === email && usuario.tipo === 'cliente') {
-        router.replace('/menu');
-      } else {
-        Alert.alert('Erro', 'Usuário ou senha inválidos.');
-      }
-    } catch (error) {
-      Alert.alert('Erro', 'Falha ao fazer login. Tente novamente.');
+    } catch (error: any) {
+      Alert.alert('Erro no Login', error.message || 'Falha ao fazer login. Tente novamente.');
     }
   };
 
@@ -110,6 +100,8 @@ export default function Login() {
           placeholderTextColor="#888888"
           value={emailInput}
           onChangeText={setEmailInput}
+          autoCapitalize="none"
+          keyboardType="email-address"
         />
 
         <TextInput
@@ -121,8 +113,16 @@ export default function Login() {
           onChangeText={setSenhaInput}
         />
 
-        <TouchableOpacity style={estilos.botao} onPress={handleLogin}>
-          <Text style={estilos.textoBotao}>Entrar</Text>
+        <TouchableOpacity 
+          style={[estilos.botao, carregando && estilos.botaoDesabilitado]} 
+          onPress={handleLogin}
+          disabled={carregando}
+        >
+          {carregando ? (
+            <ActivityIndicator color="#FFFFFF" />
+          ) : (
+            <Text style={estilos.textoBotao}>Entrar</Text>
+          )}
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -184,10 +184,25 @@ const estilos = StyleSheet.create({
     alignItems: 'center',
     marginTop: 10,
   },
+  botaoDesabilitado: {
+    backgroundColor: '#666666',
+  },
   botaoSecundario: { backgroundColor: '#888888' },
   textoBotao: {
     color: '#FFFFFF',
     fontSize: 16,
     fontFamily: 'Poppins_600SemiBold',
+  },
+  infoTeste: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 8,
+  },
+  textoInfo: {
+    fontSize: 12,
+    fontFamily: 'Poppins_400Regular',
+    color: '#666666',
+    textAlign: 'center',
   },
 });

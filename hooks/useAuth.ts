@@ -1,6 +1,6 @@
 // hooks/useAuth.ts
 import { useState, useEffect } from 'react';
-import { Cliente, LoginRequest, api } from '../services/api';
+import { Cliente, LoginRequest, Administrador, Funcionario, UsuarioLogado, TipoUsuario, api } from '../services/api';
 
 // Storage simples compatível com navegador
 const Storage = {
@@ -24,50 +24,86 @@ const Storage = {
   }
 };
 
-const CLIENTE_STORAGE_KEY = '@cliente_data';
+const USUARIO_STORAGE_KEY = '@usuario_data';
 
 export function useAuth() {
-  const [cliente, setCliente] = useState<Cliente | null>(null);
+  const [usuario, setUsuario] = useState<UsuarioLogado | null>(null);
   const [carregando, setCarregando] = useState(true);
 
-  // Carregar dados do cliente ao iniciar o app
+  // Carregar dados do usuário ao iniciar o app
   useEffect(() => {
-    carregarClienteStorage();
+    carregarUsuarioStorage();
   }, []);
 
-  const carregarClienteStorage = async () => {
+  const carregarUsuarioStorage = async () => {
     try {
-      const clienteData = Storage.getItem(CLIENTE_STORAGE_KEY);
-      if (clienteData) {
-        setCliente(JSON.parse(clienteData));
+      const usuarioData = Storage.getItem(USUARIO_STORAGE_KEY);
+      if (usuarioData) {
+        setUsuario(JSON.parse(usuarioData));
       }
     } catch (error) {
-      console.error('Erro ao carregar dados do cliente:', error);
+      console.error('Erro ao carregar dados do usuário:', error);
     } finally {
       setCarregando(false);
     }
   };
 
-  const login = async (loginRequest: LoginRequest): Promise<Cliente> => {
+  const login = async (email: string, senha: string): Promise<UsuarioLogado> => {
     try {
       setCarregando(true);
+      const loginRequest: LoginRequest = { email, senha };
+
+      // Tentar login em ordem: Administrador -> Funcionário -> Cliente
+      let usuarioLogado: UsuarioLogado | null = null;
+
+      try {
+        // Tentar como Administrador
+        const admin = await api.loginAdministrador(loginRequest);
+        usuarioLogado = {
+          id: admin.id,
+          nome: admin.nome,
+          email: admin.email,
+          tipo: 'administrador' as TipoUsuario,
+          telefone: admin.telefone
+        };
+      } catch (adminError) {
+        try {
+          // Tentar como Funcionário
+          const funcionario = await api.loginFuncionario(loginRequest);
+          usuarioLogado = {
+            id: funcionario.id,
+            nome: funcionario.nome,
+            email: funcionario.email,
+            tipo: 'funcionario' as TipoUsuario,
+            telefone: funcionario.telefone
+          };
+        } catch (funcionarioError) {
+          try {
+            // Tentar como Cliente
+            const cliente = await api.loginCliente(loginRequest);
+            usuarioLogado = {
+              id: cliente.id,
+              nome: cliente.nome,
+              email: cliente.email,
+              tipo: 'cliente' as TipoUsuario,
+              telefone: cliente.telefone
+            };
+          } catch (clienteError) {
+            throw new Error('Email ou senha inválidos para nenhum tipo de usuário');
+          }
+        }
+      }
+
+      if (!usuarioLogado) {
+        throw new Error('Erro no processo de login');
+      }
+
+      setUsuario(usuarioLogado);
+      Storage.setItem(USUARIO_STORAGE_KEY, JSON.stringify(usuarioLogado));
       
-      // Fazer autenticação no backend
-      const clienteLogado = await api.loginCliente(loginRequest);
-      
-      // Salvar apenas informações básicas no storage
-      const clienteParaStorage = {
-        id: clienteLogado.id,
-        nome: clienteLogado.nome,
-        email: clienteLogado.email,
-        telefone: clienteLogado.telefone
-      };
-      
-      setCliente(clienteLogado);
-      Storage.setItem(CLIENTE_STORAGE_KEY, JSON.stringify(clienteParaStorage));
-      
-      return clienteLogado;
+      return usuarioLogado;
     } catch (error) {
+      console.error('Erro no login:', error);
       throw error;
     } finally {
       setCarregando(false);
@@ -75,21 +111,29 @@ export function useAuth() {
   };
 
   const logout = () => {
-    Storage.removeItem(CLIENTE_STORAGE_KEY);
-    setCliente(null);
+    Storage.removeItem(USUARIO_STORAGE_KEY);
+    setUsuario(null);
   };
 
-  // Função para obter o ID do cliente logado (útil para inserções no banco)
-  const getClienteId = (): number | null => {
-    return cliente?.id || null;
+  // Função para obter o ID do usuário logado
+  const getUsuarioId = (): number | null => {
+    return usuario?.id || null;
   };
+
+  // Funções auxiliares para verificar tipo de usuário
+  const isAdministrador = (): boolean => usuario?.tipo === 'administrador';
+  const isFuncionario = (): boolean => usuario?.tipo === 'funcionario';
+  const isCliente = (): boolean => usuario?.tipo === 'cliente';
 
   return {
-    cliente,
+    usuario,
     carregando,
     login,
     logout,
-    getClienteId,
-    estaLogado: !!cliente,
+    getUsuarioId,
+    isAdministrador,
+    isFuncionario,
+    isCliente,
+    estaLogado: !!usuario,
   };
 }

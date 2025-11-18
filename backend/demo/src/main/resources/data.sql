@@ -37,4 +37,4 @@ WHERE NOT EXISTS (SELECT 1 FROM funcionarios WHERE id = 1);
 -- inserir administrador
 INSERT INTO administradores (cpf, data_cadastro, email, nome, senha, telefone, ativo) 
 SELECT '48719912021', CURRENT_TIMESTAMP, 'joseadmin@agendaqui.com', 'José dos Santos', 'jose123', '11945678901', true
-WHERE NOT EXISTS (SELECT 1 FROM funcionarios WHERE id = 1);
+WHERE NOT EXISTS (SELECT 1 FROM administradores WHERE id = 1);
