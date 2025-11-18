@@ -25,11 +25,16 @@ SELECT 6, 'PREMIUM', 'TOP Premium', 60, 190.00, true
 WHERE NOT EXISTS (SELECT 1 FROM servicos WHERE id = 6);
 
 -- Clientes
-INSERT INTO clientes (nome, telefone, email, cpf, senha, data_cadastro) 
-VALUES ('Daniel Pereira', '11912345678', 'daniel123@gmail.com', '30983833052', 'edcarros123', CURRENT_TIMESTAMP()),
-('Eduardo Margem', '11923456789', 'eduardo123@gmail.com', '94323859066', 'edcarros456', CURRENT_TIMESTAMP())
+INSERT INTO clientes (nome, telefone, email, cpf, senha, data_cadastro, ativo) 
+VALUES ('Daniel Pereira', '11912345678', 'daniel123@gmail.com', '30983833052', 'edcarros123', CURRENT_TIMESTAMP(), true),
+('Eduardo Margem', '11923456789', 'eduardo123@gmail.com', '94323859066', 'edcarros456', CURRENT_TIMESTAMP(), true)
 
 -- inserir funcionario
 INSERT INTO funcionarios (cpf, data_cadastro, email, nome, senha, telefone, ativo) 
 SELECT '80903426048', CURRENT_TIMESTAMP, 'joaosilva@agendaqui.com', 'João Silva', 'joao123', '11934567890', true
+WHERE NOT EXISTS (SELECT 1 FROM funcionarios WHERE id = 1);
+
+-- inserir administrador
+INSERT INTO administradores (cpf, data_cadastro, email, nome, senha, telefone, ativo) 
+SELECT '48719912021', CURRENT_TIMESTAMP, 'joseadmin@agendaqui.com', 'José dos Santos', 'jose123', '11945678901', true
 WHERE NOT EXISTS (SELECT 1 FROM funcionarios WHERE id = 1);

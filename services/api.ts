@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://10.135.145.26:8080/api';
+const API_BASE_URL = 'http://192.168.1.9:8080/api';
 
 export interface Cliente {
   id: number;
@@ -34,6 +34,17 @@ export interface Servico {
 }
 
 export interface Funcionario {
+  id: number;
+  cpf: string;
+  dataCadastro: string;
+  email: string;
+  nome: string;
+  senha: string;
+  telefone: string;
+  ativo: boolean;
+}
+
+export interface Administrador {
   id: number;
   cpf: string;
   dataCadastro: string;
