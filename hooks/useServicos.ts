@@ -10,11 +10,14 @@ export function useServicos() {
     try {
       setCarregando(true);
       setErro(null);
+      console.log('🔄 Carregando serviços da API...');
       const dados = await api.getServicos();
+      console.log('✅ Serviços carregados:', dados.length);
       setServicos(dados);
     } catch (error) {
-      setErro('Erro ao carregar serviços');
-      console.error('Erro detalhado:', error);
+      const mensagemErro = error instanceof Error ? error.message : 'Erro ao carregar serviços';
+      setErro(mensagemErro);
+      console.error('❌ Erro detalhado:', error);
     } finally {
       setCarregando(false);
     }

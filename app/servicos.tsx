@@ -14,13 +14,13 @@ import {
   Alert
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useServicos } from '../hooks/useServicos'; // Ajuste o caminho conforme sua estrutura
+import { useServicos } from '../hooks/useServicos'; // Importe o hook
 
 interface Servico {
   id: number;
   nome: string;
   preco: number;
-  duracaoMin: number; // Mudou de duracao_min para duracaoMin
+  duracaoMin: number;
   descricao?: string;
   ativo: boolean;
   itensInclusos?: string[];
@@ -28,17 +28,14 @@ interface Servico {
 
 export default function Servicos() {
   const router = useRouter();
-  const { servicos, carregando, erro, recarregar } = useServicos();
+  const { servicos, carregando, erro, recarregar } = useServicos(); // Use o hook
   const [modalVisivel, setModalVisivel] = useState(false);
   const [servicoSelecionado, setServicoSelecionado] = useState<Servico | null>(null);
 
-  // Mostrar erro se houver
+  // Mostrar erro se houver problema na API
   useEffect(() => {
     if (erro) {
-      Alert.alert('Erro', erro, [
-        { text: 'OK', onPress: () => {} },
-        { text: 'Tentar Novamente', onPress: recarregar }
-      ]);
+      Alert.alert('Erro', erro);
     }
   }, [erro]);
 
@@ -87,7 +84,7 @@ export default function Servicos() {
         )}
         ListEmptyComponent={
           <Text style={estilos.vazio}>
-            {carregando ? 'Carregando...' : 'Nenhum serviço disponível'}
+            {erro ? 'Erro ao carregar serviços' : 'Nenhum serviço disponível'}
           </Text>
         }
       />
@@ -99,14 +96,15 @@ export default function Servicos() {
               <Text style={estilos.tituloModal}>{servicoSelecionado.nome}</Text>
               <Text style={estilos.descricaoModal}>{servicoSelecionado.descricao}</Text>
 
-              {servicoSelecionado.itensInclusos && (
+              {/* Se você tiver itens inclusos no backend, descomente esta parte */}
+              {/* {servicoSelecionado.itensInclusos && servicoSelecionado.itensInclusos.length > 0 && (
                 <>
                   <Text style={estilos.subtituloModal}>Incluso nesta lavagem:</Text>
                   {servicoSelecionado.itensInclusos.map((item, index) => (
                     <Text key={index} style={estilos.itemIncluso}>• {item}</Text>
                   ))}
                 </>
-              )}
+              )} */}
 
               <Text style={estilos.infoModal}>Duração: {servicoSelecionado.duracaoMin} minutos</Text>
               <Text style={estilos.infoModal}>Preço: R$ {servicoSelecionado.preco.toFixed(2)}</Text>
@@ -119,7 +117,9 @@ export default function Servicos() {
                       pathname: '/agendamento', 
                       params: { 
                         servico: servicoSelecionado.nome,
-                        servicoId: servicoSelecionado.id.toString()
+                        servicoId: servicoSelecionado.id.toString(),
+                        preco: servicoSelecionado.preco.toString(),
+                        duracao: servicoSelecionado.duracaoMin.toString()
                       } 
                     });
                     fecharModal();
@@ -140,7 +140,6 @@ export default function Servicos() {
   );
 }
 
-// Os estilos permanecem os mesmos...
 const estilos = StyleSheet.create({
   container: { flex: 1, padding: 20, backgroundColor: '#fff', paddingTop: 60 },
   centralizado: { justifyContent: 'center', alignItems: 'center' },

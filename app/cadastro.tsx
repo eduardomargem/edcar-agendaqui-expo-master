@@ -1,14 +1,29 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert, Animated } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+  Alert,
+  Animated,
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as SplashScreen from 'expo-splash-screen';
-import { useFonts, Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold } from '@expo-google-fonts/poppins';
+import {
+  useFonts,
+  Poppins_400Regular,
+  Poppins_600SemiBold,
+  Poppins_700Bold,
+} from '@expo-google-fonts/poppins';
 import { useRouter } from 'expo-router';
 
 SplashScreen.preventAutoHideAsync();
 
 export default function Cadastro() {
   const router = useRouter();
+
   const [fontsLoaded] = useFonts({
     Poppins_400Regular,
     Poppins_600SemiBold,
@@ -22,6 +37,8 @@ export default function Cadastro() {
   }, [fontsLoaded]);
 
   const [nome, setNome] = useState('');
+  const [cpf, setCpf] = useState('');
+  const [telefone, setTelefone] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
@@ -46,7 +63,7 @@ export default function Cadastro() {
   }, []);
 
   const fazerCadastro = () => {
-    if (!nome || !email || !senha || !confirmarSenha) {
+    if (!nome || !cpf || !telefone || !email || !senha || !confirmarSenha) {
       Alert.alert('Erro', 'Preencha todos os campos');
       return;
     }
@@ -66,7 +83,12 @@ export default function Cadastro() {
       style={estilos.container}
       onLayout={onLayoutRootView}
     >
-      <Animated.View style={[estilos.card, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+      <Animated.View
+        style={[
+          estilos.card,
+          { opacity: fadeAnim, transform: [{ translateY: slideAnim }] },
+        ]}
+      >
         <View style={estilos.logoContainer}>
           <Image
             source={require('../assets/images/logoedcarpng.png')}
@@ -85,8 +107,25 @@ export default function Cadastro() {
         />
         <TextInput
           style={estilos.input}
+          placeholder="CPF"
+          placeholderTextColor="#888888"
+          keyboardType="numeric"
+          value={cpf}
+          onChangeText={setCpf}
+        />
+        <TextInput
+          style={estilos.input}
+          placeholder="Telefone"
+          placeholderTextColor="#888888"
+          keyboardType="phone-pad"
+          value={telefone}
+          onChangeText={setTelefone}
+        />
+        <TextInput
+          style={estilos.input}
           placeholder="Email"
           placeholderTextColor="#888888"
+          keyboardType="email-address"
           value={email}
           onChangeText={setEmail}
         />

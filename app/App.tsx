@@ -6,4 +6,8 @@ import 'expo-router/entry';
 // 1° Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 // 2° npm install
 // 3° npx expo start
+
+//Admin: admin@teste.com / 1234
+//Funcionário: funcionario@teste.com / 1234
+//Cliente: cliente@teste.com / 1234
  
