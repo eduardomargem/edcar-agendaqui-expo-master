@@ -65,7 +65,7 @@ public class ClienteController {
     // POST - Login do cliente (verificar email e senha)
     @PostMapping("/login")
     public ResponseEntity<Cliente> loginCliente(@RequestBody LoginRequest loginRequest) {
-        Optional<Cliente> cliente = clienteRepository.findByEmailAndSenha(
+        Optional<Cliente> cliente = clienteRepository.findByEmailAndSenhaAndAtivoTrue(
             loginRequest.getEmail(), 
             loginRequest.getSenha()
         );
@@ -80,30 +80,33 @@ public class ClienteController {
     // POST - Verificar se email já existe
     @PostMapping("/verificar-email")
     public ResponseEntity<Boolean> verificarEmail(@RequestBody VerificarEmailRequest request) {
-        boolean existe = clienteRepository.existsByEmail(request.getEmail());
+        boolean existe = clienteRepository.existsByEmailAndAtivoTrue(request.getEmail());
         return ResponseEntity.ok(existe);
     }
 
     // POST - Verificar se CPF já existe
     @PostMapping("/verificar-cpf")
     public ResponseEntity<Boolean> verificarCpf(@RequestBody VerificarCpfRequest request) {
-        boolean existe = clienteRepository.existsByCpf(request.getCpf());
+        boolean existe = clienteRepository.existsByCpfAndAtivoTrue(request.getCpf());
         return ResponseEntity.ok(existe);
     }
 
     // POST - Criar novo cliente
     @PostMapping
     public ResponseEntity<?> createCliente(@RequestBody Cliente cliente) {
-        // Verificar se email já existe
-        if (clienteRepository.existsByEmail(cliente.getEmail())) {
+        // Verificar se email já existe (em clientes ativos)
+        if (clienteRepository.existsByEmailAndAtivoTrue(cliente.getEmail())) {
             return ResponseEntity.badRequest().body("Email já cadastrado");
         }
         
-        // Verificar se CPF já existe (se foi informado)
+        // Verificar se CPF já existe (em clientes ativos)
         if (cliente.getCpf() != null && !cliente.getCpf().isEmpty() && 
-            clienteRepository.existsByCpf(cliente.getCpf())) {
+            clienteRepository.existsByCpfAndAtivoTrue(cliente.getCpf())) {
             return ResponseEntity.badRequest().body("CPF já cadastrado");
         }
+        
+        // Garantir que o cliente seja criado como ativo
+        cliente.setAtivo(true);
         
         // A data de cadastro será definida automaticamente no construtor
         Cliente clienteSalvo = clienteRepository.save(cliente);

@@ -38,4 +38,13 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long> {
     
     // Verificar se CPF já existe (para validação)
     boolean existsByCpf(String cpf);
+
+    // Buscar cliente por email e senha (apenas ativos - para login)
+    Optional<Cliente> findByEmailAndSenhaAndAtivoTrue(String email, String senha);
+
+    // Verificar se email já existe (apenas ativos)
+    boolean existsByEmailAndAtivoTrue(String email);
+
+    // Verificar se CPF já existe (apenas ativos)
+    boolean existsByCpfAndAtivoTrue(String cpf);
 }

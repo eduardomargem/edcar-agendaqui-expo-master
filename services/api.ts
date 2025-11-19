@@ -32,6 +32,14 @@ export interface Funcionario {
   ativo: boolean;
 }
 
+export interface CadastroFuncionarioRequest {
+  nome: string;
+  cpf: string;
+  email: string;
+  senha: string;
+  telefone: string;
+}
+
 export interface LoginRequest {
   email: string;
   senha: string;
@@ -43,6 +51,14 @@ export interface VerificarEmailRequest {
 
 export interface VerificarCpfRequest {
   cpf: string;
+}
+
+export interface CadastroClienteRequest {
+  nome: string;
+  telefone: string;
+  email: string;
+  cpf: string;
+  senha: string;
 }
 
 export interface Servico {
@@ -67,6 +83,141 @@ export interface UsuarioLogado {
 }
 
 export const api = {
+  // ======== CADASTRO DE CLIENTE ========
+  async cadastrarCliente(clienteData: CadastroClienteRequest): Promise<Cliente> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/clientes`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(clienteData),
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || 'Erro ao cadastrar cliente');
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('Erro na API:', error);
+      throw error;
+    }
+  },
+
+  async cadastrarFuncionario(funcionarioData: CadastroFuncionarioRequest): Promise<Funcionario> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/funcionarios`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(funcionarioData),
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || 'Erro ao cadastrar funcionário');
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Erro na API:', error);
+    throw error;
+  }
+},
+
+async getFuncionarios(): Promise<Funcionario[]> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/funcionarios`);
+    if (!response.ok) {
+      throw new Error('Erro ao buscar funcionários');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Erro na API:', error);
+    throw error;
+  }
+},
+
+async verificarEmailFuncionario(email: string): Promise<boolean> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/funcionarios/verificar-email`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email }),
+    });
+    if (!response.ok) {
+      throw new Error('Erro ao verificar email do funcionário');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Erro na API:', error);
+    throw error;
+  }
+},
+
+async verificarCpfFuncionario(cpf: string): Promise<boolean> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/funcionarios/verificar-cpf`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ cpf }),
+    });
+    if (!response.ok) {
+      throw new Error('Erro ao verificar CPF do funcionário');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Erro na API:', error);
+    throw error;
+  }
+},
+
+  // ======== VERIFICAÇÕES ========
+  async verificarEmailCliente(email: string): Promise<boolean> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/clientes/verificar-email`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+      if (!response.ok) {
+        throw new Error('Erro ao verificar email');
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Erro na API:', error);
+      throw error;
+    }
+  },
+
+  async verificarCpfCliente(cpf: string): Promise<boolean> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/clientes/verificar-cpf`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ cpf }),
+      });
+      if (!response.ok) {
+        throw new Error('Erro ao verificar CPF');
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Erro na API:', error);
+      throw error;
+    }
+  },
+
   // ======== LOGIN POR TIPO DE USUÁRIO ========
   async loginCliente(loginRequest: LoginRequest): Promise<Cliente> {
     try {
@@ -136,26 +287,6 @@ export const api = {
         throw new Error('Erro ao fazer login como funcionário');
       }
       
-      return await response.json();
-    } catch (error) {
-      console.error('Erro na API:', error);
-      throw error;
-    }
-  },
-
-  // ======== VERIFICAÇÕES ========
-  async verificarEmailCliente(email: string): Promise<boolean> {
-    try {
-      const response = await fetch(`${API_BASE_URL}/clientes/verificar-email`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
-      });
-      if (!response.ok) {
-        throw new Error('Erro ao verificar email');
-      }
       return await response.json();
     } catch (error) {
       console.error('Erro na API:', error);

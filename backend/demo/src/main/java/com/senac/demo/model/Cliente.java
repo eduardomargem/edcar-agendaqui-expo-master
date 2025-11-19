@@ -29,9 +29,13 @@ public class Cliente {
     @Column(name = "senha", length = 20, nullable = false)
     private String senha;
 
+    @Column(name = "ativo", nullable = false)
+    private Boolean ativo = true;
+
     // Construtores
     public Cliente() {
         this.dataCadastro = LocalDateTime.now();
+        this.ativo = true;
     }
     
     public Cliente(String nome, String telefone, String email, String cpf, String senha) {
@@ -41,6 +45,7 @@ public class Cliente {
         this.cpf = cpf;
         this.senha = senha;
         this.dataCadastro = LocalDateTime.now();
+        this.ativo = true;
     }
     
     public Cliente(String nome, String telefone, String email, String cpf, String senha, LocalDateTime dataCadastro) {
@@ -50,6 +55,7 @@ public class Cliente {
         this.cpf = cpf;
         this.senha = senha;
         this.dataCadastro = dataCadastro;
+        this.ativo = true;
     }
 
     // Getters e Setters
@@ -109,6 +115,14 @@ public class Cliente {
         this.senha = senha;
     }
 
+    public Boolean getAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(Boolean ativo) {
+        this.ativo = ativo;
+    }
+
     // toString para debug
     @Override
     public String toString() {
@@ -120,6 +134,7 @@ public class Cliente {
                 ", dataCadastro=" + dataCadastro +
                 ", cpf='" + cpf + '\'' +
                 ", senha='" + senha + '\'' +
+                ", ativo=" + ativo +
                 '}';
     }
 }
