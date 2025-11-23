@@ -20,13 +20,13 @@ export default function MenuFuncionario() {
           <Text style={estilos.textoCard}>Agenda do Dia</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={estilos.card}
           onPress={() => router.push('/admin/GestaoAgendamentos')}
         >
           <ClipboardCheck color="#0B1F44" size={28} />
           <Text style={estilos.textoCard}>Gestão de Agendamentos</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
 
       <TouchableOpacity

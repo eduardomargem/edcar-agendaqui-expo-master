@@ -184,6 +184,54 @@ export const api = {
       throw error;
     }
   },
+
+  async getAgendamentosPorData(data: string): Promise<Agendamento[]> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/agendamentos/data/${data}`);
+      if (!response.ok) {
+        throw new Error('Erro ao buscar agendamentos por data');
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Erro na API:', error);
+      throw error;
+    }
+  },
+
+  async getAgendamentoPorId(id: number): Promise<Agendamento> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/agendamentos/${id}`);
+      if (!response.ok) {
+        throw new Error('Erro ao buscar agendamento');
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Erro na API:', error);
+      throw error;
+    }
+  },
+
+  async atualizarStatusAgendamento(id: number, status: string): Promise<Agendamento> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/agendamentos/${id}/status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status }),
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || 'Erro ao atualizar status do agendamento');
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('Erro na API:', error);
+      throw error;
+    }
+  },
   
   // ======== CADASTRO DE CLIENTE ========
   async cadastrarCliente(clienteData: CadastroClienteRequest): Promise<Cliente> {

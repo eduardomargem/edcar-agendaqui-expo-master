@@ -17,10 +17,10 @@ export default function MenuAdmin() {
           <Text style={estilos.textoCard}>Agenda do Dia</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={estilos.card} onPress={() => router.push('/admin/GestaoAgendamentos')}>
+        {/* <TouchableOpacity style={estilos.card} onPress={() => router.push('/admin/GestaoAgendamentos')}>
           <ClipboardCheck color="#0B1F44" size={28} />
           <Text style={estilos.textoCard}>Gestão de Agendamentos</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         <TouchableOpacity style={estilos.card} onPress={() => router.push('/admin/ResumoFinanceiro')}>
           <BarChart3 color="#0B1F44" size={28} />

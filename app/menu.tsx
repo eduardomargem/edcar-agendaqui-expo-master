@@ -30,7 +30,7 @@ export default function Menu() {
   };
 
   const formatarData = (dataString: string) => {
-    const data = new Date(dataString);
+    const data = new Date(dataString + 'T12:00:00');
     return data.toLocaleDateString('pt-BR');
   };
 
