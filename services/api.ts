@@ -1,5 +1,28 @@
 const API_BASE_URL = 'http://192.168.1.9:8080/api';
 
+export interface Agendamento {
+  id: number;
+  cliente: Cliente;
+  servico: Servico;
+  modeloCarro: string;
+  dataAgendamento: string;
+  horario: string;
+  status: string;
+  dataCriacao: string;
+}
+
+export interface AgendamentoRequest {
+  clienteId: number;
+  servicoId: number;
+  modeloCarro: string;
+  dataAgendamento: string;
+  horario: string;
+}
+
+export interface HorarioDisponivelResponse {
+  horarios: string[];
+}
+
 export interface Cliente {
   id: number;
   nome: string;
@@ -83,6 +106,85 @@ export interface UsuarioLogado {
 }
 
 export const api = {
+  // ======== AGENDAMENTOS ========
+  async criarAgendamento(agendamentoData: AgendamentoRequest): Promise<Agendamento> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/agendamentos`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(agendamentoData),
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || 'Erro ao criar agendamento');
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('Erro na API:', error);
+      throw error;
+    }
+  },
+
+  async getAgendamentosPorCliente(clienteId: number): Promise<Agendamento[]> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/agendamentos/cliente/${clienteId}`);
+      if (!response.ok) {
+        throw new Error('Erro ao buscar agendamentos');
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Erro na API:', error);
+      throw error;
+    }
+  },
+
+  async getHorariosDisponiveis(data: string): Promise<string[]> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/agendamentos/horarios-disponiveis/${data}`);
+      if (!response.ok) {
+        throw new Error('Erro ao buscar horários disponíveis');
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Erro na API:', error);
+      throw error;
+    }
+  },
+
+  async cancelarAgendamento(id: number): Promise<void> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/agendamentos/${id}`, {
+        method: 'DELETE',
+      });
+      
+      if (!response.ok) {
+        throw new Error('Erro ao cancelar agendamento');
+      }
+    } catch (error) {
+      console.error('Erro na API:', error);
+      throw error;
+    }
+  },
+
+  async verificarDisponibilidade(data: string, horario: string): Promise<boolean> {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/agendamentos/verificar-disponibilidade?data=${data}&horario=${horario}`
+      );
+      if (!response.ok) {
+        throw new Error('Erro ao verificar disponibilidade');
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Erro na API:', error);
+      throw error;
+    }
+  },
+  
   // ======== CADASTRO DE CLIENTE ========
   async cadastrarCliente(clienteData: CadastroClienteRequest): Promise<Cliente> {
     try {

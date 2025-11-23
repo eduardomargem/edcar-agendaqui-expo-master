@@ -55,9 +55,11 @@ export function useAuth() {
 
       // Tentar login em ordem: Administrador -> Funcionário -> Cliente
       let usuarioLogado: UsuarioLogado | null = null;
+      let erroFinal: string | null = null;
 
       try {
-        // Tentar como Administrador
+        // Tentar como Administrador (suprimir erro no console)
+        console.log('🔐 Tentando login como administrador...');
         const admin = await api.loginAdministrador(loginRequest);
         usuarioLogado = {
           id: admin.id,
@@ -66,9 +68,14 @@ export function useAuth() {
           tipo: 'administrador' as TipoUsuario,
           telefone: admin.telefone
         };
+        console.log('✅ Login como administrador bem-sucedido');
       } catch (adminError) {
+        // Não logar erro no console - é esperado que falhe para não-administradores
+        console.log('ℹ️ Não é administrador, tentando como funcionário...');
+        
         try {
-          // Tentar como Funcionário
+          // Tentar como Funcionário (suprimir erro no console)
+          console.log('🔐 Tentando login como funcionário...');
           const funcionario = await api.loginFuncionario(loginRequest);
           usuarioLogado = {
             id: funcionario.id,
@@ -77,9 +84,14 @@ export function useAuth() {
             tipo: 'funcionario' as TipoUsuario,
             telefone: funcionario.telefone
           };
+          console.log('✅ Login como funcionário bem-sucedido');
         } catch (funcionarioError) {
+          // Não logar erro no console - é esperado que falhe para não-funcionários
+          console.log('ℹ️ Não é funcionário, tentando como cliente...');
+          
           try {
             // Tentar como Cliente
+            console.log('🔐 Tentando login como cliente...');
             const cliente = await api.loginCliente(loginRequest);
             usuarioLogado = {
               id: cliente.id,
@@ -88,14 +100,17 @@ export function useAuth() {
               tipo: 'cliente' as TipoUsuario,
               telefone: cliente.telefone
             };
+            console.log('✅ Login como cliente bem-sucedido');
           } catch (clienteError) {
-            throw new Error('Email ou senha inválidos para nenhum tipo de usuário');
+            // Guardar o erro para mostrar ao usuário
+            erroFinal = 'Email ou senha inválidos';
+            console.error('❌ Falha no login para todos os tipos de usuário');
           }
         }
       }
 
       if (!usuarioLogado) {
-        throw new Error('Erro no processo de login');
+        throw new Error(erroFinal || 'Email ou senha inválidos');
       }
 
       setUsuario(usuarioLogado);
@@ -111,9 +126,11 @@ export function useAuth() {
   };
 
   const logout = () => {
-    Storage.removeItem(USUARIO_STORAGE_KEY);
-    setUsuario(null);
-  };
+  console.log('🚪 Executando logout...');
+  Storage.removeItem(USUARIO_STORAGE_KEY);
+  setUsuario(null);
+  console.log('✅ Logout concluído - usuário removido do storage e estado');
+};
 
   // Função para obter o ID do usuário logado
   const getUsuarioId = (): number | null => {
