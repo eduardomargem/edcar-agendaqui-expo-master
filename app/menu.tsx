@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import { Alert, FlatList, StyleSheet, Text, TouchableOpacity, View, ActivityIndicator, ScrollView } from 'react-native';
 import { useAgendamentos } from '../hooks/useAgendamentos';
 import { useAuth } from '../hooks/useAuth';
@@ -8,25 +8,30 @@ export default function Menu() {
   const router = useRouter();
   const { agendamentos, carregando, erro, cancelarAgendamento } = useAgendamentos();
   const { usuario, logout, carregando: authCarregando } = useAuth();
+  const [cancelandoIds, setCancelandoIds] = useState<number[]>([]);
 
   const handleCancelarAgendamento = async (agendamentoId: number) => {
-    console.log('🎯 BOTÃO CANCELAR CLICADO - Agendamento ID:', agendamentoId);
+    console.log('🎯 CANCELANDO AGENDAMENTO - ID:', agendamentoId);
     
-    Alert.alert('Cancelar Agendamento', 'Tem certeza que deseja cancelar este agendamento?', [
-      { text: 'Não', style: 'cancel' },
-      {
-        text: 'Sim',
-        onPress: async () => {
-          console.log('✅ Confirmado cancelamento do agendamento:', agendamentoId);
-          const sucesso = await cancelarAgendamento(agendamentoId);
-          if (sucesso) {
-            Alert.alert('Sucesso', 'Agendamento cancelado com sucesso!');
-          } else {
-            Alert.alert('Erro', 'Não foi possível cancelar o agendamento');
-          }
-        },
-      },
-    ]);
+    // Adiciona o ID à lista de cancelamentos em andamento
+    setCancelandoIds(prev => [...prev, agendamentoId]);
+    
+    try {
+      const sucesso = await cancelarAgendamento(agendamentoId);
+      
+      if (sucesso) {
+        console.log('✅ Agendamento cancelado com sucesso:', agendamentoId);
+        // O estado já é atualizado automaticamente pelo useAgendamentos
+      } else {
+        console.error('❌ Falha ao cancelar agendamento:', agendamentoId);
+        // Não mostra alerta de erro - o usuário pode tentar novamente
+      }
+    } catch (error) {
+      console.error('❌ Erro ao cancelar agendamento:', error);
+    } finally {
+      // Remove o ID da lista de cancelamentos em andamento
+      setCancelandoIds(prev => prev.filter(id => id !== agendamentoId));
+    }
   };
 
   const formatarData = (dataString: string) => {
@@ -157,11 +162,22 @@ export default function Menu() {
 
                 {item.status === 'agendado' && (
                   <TouchableOpacity
-                    style={estilos.botaoCancelar}
+                    style={[
+                      estilos.botaoCancelar,
+                      cancelandoIds.includes(item.id) && estilos.botaoCancelando
+                    ]}
                     onPress={() => handleCancelarAgendamento(item.id)}
+                    disabled={cancelandoIds.includes(item.id)}
                     activeOpacity={0.7}
                   >
-                    <Text style={estilos.textoCancelar}>Cancelar Agendamento</Text>
+                    {cancelandoIds.includes(item.id) ? (
+                      <View style={estilos.containerCarregando}>
+                        <ActivityIndicator size="small" color="#FFF" />
+                        <Text style={estilos.textoCancelar}>Cancelando...</Text>
+                      </View>
+                    ) : (
+                      <Text style={estilos.textoCancelar}>Cancelar Agendamento</Text>
+                    )}
                   </TouchableOpacity>
                 )}
               </View>
@@ -276,13 +292,22 @@ const estilos = StyleSheet.create({
   botaoCancelar: { 
     marginTop: 10, 
     backgroundColor: '#FF3B30', 
-    padding: 8, 
+    padding: 12, 
     borderRadius: 5 
+  },
+  botaoCancelando: {
+    backgroundColor: '#FF8A65', // Cor mais clara quando está cancelando
   },
   textoCancelar: { 
     color: '#fff', 
     fontWeight: '600', 
-    textAlign: 'center' 
+    textAlign: 'center',
+    fontSize: 14
+  },
+  containerCarregando: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   containerBotaoSair: {
     position: 'absolute',

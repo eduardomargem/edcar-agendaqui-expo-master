@@ -42,17 +42,23 @@ export function useAgendamentos() {
   };
 
   const cancelarAgendamento = async (id: number) => {
-    try {
-      await api.cancelarAgendamento(id);
-      // Atualizar lista local
-      setAgendamentos(prev => prev.filter(ag => ag.id !== id));
-      return true;
-    } catch (error) {
-      const mensagemErro = error instanceof Error ? error.message : 'Erro ao cancelar agendamento';
-      setErro(mensagemErro);
-      console.error('❌ Erro ao cancelar agendamento:', error);
-      return false;
-    }
+    console.log('🔥 Tentando cancelar agendamento ID:', id);
+  
+  try {
+    // Tentativa 1: Usar a função de atualizar status
+    console.log('🔄 Tentando atualizar status para "cancelado"...');
+    const agendamentoAtualizado = await api.atualizarStatusAgendamento(id, 'cancelado');
+    console.log('✅ Status atualizado com sucesso:', agendamentoAtualizado);
+    
+    // Atualizar lista local
+    setAgendamentos(prev => prev.map(ag => 
+      ag.id === id ? { ...ag, status: 'cancelado' } : ag
+    ));
+    
+    return true;
+  } catch (error) {
+    console.error('❌ Erro ao atualizar status:', error);
+  }
   };
 
   useEffect(() => {
